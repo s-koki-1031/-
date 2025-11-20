@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">録音アプリ</string>
+    <string name="record_start">録音開始</string>
+    <string name="record_stop">録音停止</string>
+    <string name="status_ready">準備完了</string>
+    <string name="status_recording">録音中...</string>
+    <string name="status_processing">処理中...</string>
+    <string name="info_text">録音ボタンを押して録音を開始します\nもう一度押すと録音を停止し、文字起こしとデータを保存します</string>
+    <string name="permission_required">録音権限が必要です</string>
+    <string name="recording_saved">録音が保存されました</string>
+    <string name="transcription_saved">文字起こしが保存されました</string>
+    <string name="error_recording">録音エラーが発生しました</string>
+    <string name="error_transcription">文字起こしエラーが発生しました</string>
+</resources>
+
+
