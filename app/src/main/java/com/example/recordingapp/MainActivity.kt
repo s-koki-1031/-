@@ -12,6 +12,9 @@ import androidx.core.content.ContextCompat
 import com.example.recordingapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -25,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private var isRecording = false
     private var outputFile: File? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private var recordingTimeJob: Job? = null
+    private var recordingStartTime: Long = 0
     
     companion object {
         private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
@@ -126,6 +131,8 @@ class MainActivity : AppCompatActivity() {
                     prepare()
                     start()
                     isRecording = true
+                    recordingStartTime = System.currentTimeMillis()
+                    startRecordingTimer()
                     updateUI(true)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -149,6 +156,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopRecording() {
         try {
+            stopRecordingTimer()
             mediaRecorder?.apply {
                 stop()
                 release()
@@ -185,16 +193,33 @@ class MainActivity : AppCompatActivity() {
         if (recording) {
             binding.statusText.text = getString(R.string.status_recording)
             binding.recordButton.text = getString(R.string.record_stop)
-            binding.recordButton.setBackgroundColor(
-                ContextCompat.getColor(this, android.R.color.holo_red_dark)
-            )
+            binding.recordButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.recording_stop)
+            binding.recordingTimeText.visibility = android.view.View.VISIBLE
         } else {
             binding.statusText.text = getString(R.string.status_ready)
             binding.recordButton.text = getString(R.string.record_start)
-            binding.recordButton.setBackgroundColor(
-                ContextCompat.getColor(this, android.R.color.holo_blue_dark)
-            )
+            binding.recordButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.recording_start)
+            binding.recordingTimeText.visibility = android.view.View.GONE
+            binding.recordingTimeText.text = "00:00"
         }
+    }
+    
+    private fun startRecordingTimer() {
+        recordingTimeJob = coroutineScope.launch {
+            while (isActive && isRecording) {
+                val elapsedTime = System.currentTimeMillis() - recordingStartTime
+                val seconds = (elapsedTime / 1000).toInt()
+                val minutes = seconds / 60
+                val secs = seconds % 60
+                binding.recordingTimeText.text = String.format("%02d:%02d", minutes, secs)
+                delay(1000)
+            }
+        }
+    }
+    
+    private fun stopRecordingTimer() {
+        recordingTimeJob?.cancel()
+        recordingTimeJob = null
     }
 
     private fun saveRecording(audioFile: File) {
@@ -290,6 +315,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopRecordingTimer()
         releaseRecorder()
     }
 }
