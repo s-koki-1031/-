@@ -24,9 +24,72 @@ Android用の録音アプリです。録音ボタンで録音を開始し、も�
 
 ## ビルド方法
 
+### Android Studioを使用する場合
+
 1. Android Studioでプロジェクトを開く
 2. Gradle Syncを実行
 3. デバイスまたはエミュレータで実行
+
+### コマンドラインでビルドする場合（Android Studio不要）
+
+#### 前提条件
+
+- Java JDK 11以上がインストールされていること
+- Android SDKがインストールされていること
+- 環境変数`ANDROID_HOME`が設定されていること（推奨）
+
+#### Windowsでのビルド
+
+```batch
+# デバッグAPKをビルド
+gradlew.bat assembleDebug
+
+# リリースAPKをビルド
+gradlew.bat assembleRelease
+
+# クリーンビルド
+gradlew.bat clean
+
+# すべてビルド（クリーン + デバッグ + リリース）
+build.bat
+```
+
+#### Linux/Macでのビルド
+
+```bash
+# 実行権限を付与（初回のみ）
+chmod +x gradlew build.sh
+
+# デバッグAPKをビルド
+./gradlew assembleDebug
+
+# リリースAPKをビルド
+./gradlew assembleRelease
+
+# クリーンビルド
+./gradlew clean
+
+# すべてビルド（クリーン + デバッグ + リリース）
+./build.sh
+```
+
+#### ビルド出力
+
+- **デバッグAPK**: `app/build/outputs/apk/debug/app-debug.apk`
+- **リリースAPK**: `app/build/outputs/apk/release/app-release.apk`
+
+#### よく使うコマンド
+
+```batch
+# 依存関係を確認
+gradlew.bat dependencies
+
+# ビルド情報を表示
+gradlew.bat tasks
+
+# インストール（デバイスに接続している場合）
+gradlew.bat installDebug
+```
 
 ## 注意事項
 
